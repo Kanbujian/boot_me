@@ -2,6 +2,7 @@ package com.kanbujian.controller;
 
 import com.kanbujian.dao.TransactionDao;
 import com.kanbujian.entity.Transaction;
+import com.kanbujian.entity.TransactionData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,9 @@ public class TransactionsController {
     @PostMapping()
     @Transactional
     public @ResponseBody Map create(){
-        Transaction transaction = new Transaction("cny", 1000, "refund");
+        Transaction transaction = new Transaction("cny", 500, "refresh");
+        TransactionData transactionData = new TransactionData(1002032, "Back to december");
+        transaction.setTransactionData(transactionData);
         transactionDao.save(transaction);
         System.out.println("save successful");
         return null;

@@ -11,3 +11,6 @@ insert into transactions
 values
 ('cny', 100, 'charge'),
 ('cny', 150, 'charge');
+
+alter table transactions add column data json;
+alter table transactions change data transaction_data json;

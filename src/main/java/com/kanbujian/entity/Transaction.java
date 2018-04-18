@@ -1,9 +1,8 @@
 package com.kanbujian.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.kanbujian.converter.JpaJsonConverter;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -18,8 +17,10 @@ public class Transaction implements Serializable {
     @NotNull
     private String orderAction;
 
-    public Transaction(){
+    @Convert(converter = JpaJsonConverter.class)
+    private TransactionData transactionData;
 
+    public Transaction(){
     }
 
     public Transaction(String currency, Integer amount, String orderAction) {
@@ -60,5 +61,14 @@ public class Transaction implements Serializable {
     public void setOrderAction(String orderAction) {
         this.orderAction = orderAction;
     }
+
+    public TransactionData getTransactionData() {
+        return transactionData;
+    }
+
+    public void setTransactionData(TransactionData transactionData) {
+        this.transactionData = transactionData;
+    }
+
 
 }
