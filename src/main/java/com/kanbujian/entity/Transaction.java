@@ -1,6 +1,7 @@
 package com.kanbujian.entity;
 
-import com.kanbujian.converter.JpaJsonConverter;
+
+import com.kanbujian.converter.TransactionDataConverter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,9 +16,10 @@ public class Transaction implements Serializable {
     @NotNull
     private Integer amount;
     @NotNull
-    private String orderAction;
+    @Enumerated(value = EnumType.STRING)
+    private OrderAction orderAction;
 
-    @Convert(converter = JpaJsonConverter.class)
+    @Convert(converter = TransactionDataConverter.class)
     private TransactionData transactionData;
 
     public Transaction(){
@@ -26,7 +28,7 @@ public class Transaction implements Serializable {
     public Transaction(String currency, Integer amount, String orderAction) {
         this.currency = currency;
         this.amount = amount;
-        this.orderAction = orderAction;
+        this.orderAction = OrderAction.valueOf(orderAction);
     }
 
 
@@ -54,11 +56,11 @@ public class Transaction implements Serializable {
         this.amount = amount;
     }
 
-    public String getOrderAction() {
+    public OrderAction getOrderAction() {
         return orderAction;
     }
 
-    public void setOrderAction(String orderAction) {
+    public void setOrderAction(OrderAction orderAction) {
         this.orderAction = orderAction;
     }
 
@@ -70,5 +72,8 @@ public class Transaction implements Serializable {
         this.transactionData = transactionData;
     }
 
-
+    enum OrderAction{
+        charge,
+        refund
+    }
 }

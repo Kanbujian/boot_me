@@ -29,7 +29,7 @@ public class TransactionsController {
     @PostMapping()
     @Transactional
     public @ResponseBody Map create(){
-        Transaction transaction = new Transaction("cny", 500, "refresh");
+        Transaction transaction = new Transaction("cny", 200, "refund");
         TransactionData transactionData = new TransactionData(1002032, "Back to december");
         transaction.setTransactionData(transactionData);
         transactionDao.save(transaction);
@@ -38,8 +38,8 @@ public class TransactionsController {
     }
 
     @GetMapping("/{id}")
-    public @ResponseBody Transaction show(){
-        Transaction transaction = transactionDao.findFirstByCurrency("cny");
+    public @ResponseBody Transaction show(@PathVariable(name = "id")Long id){
+        Transaction transaction = transactionDao.findOne(id);
         return transaction;
     }
 
