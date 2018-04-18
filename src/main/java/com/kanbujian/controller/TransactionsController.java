@@ -4,6 +4,7 @@ import com.kanbujian.dao.TransactionDao;
 import com.kanbujian.entity.Transaction;
 import com.kanbujian.entity.TransactionData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -13,27 +14,27 @@ import java.util.List;
 import java.util.Map;
 
 @RestController()
+@Transactional
 @RequestMapping("transactions")
 public class TransactionsController {
     @Autowired
     private TransactionDao transactionDao;
 
     @GetMapping()
-    public @ResponseBody List index(@RequestBody Map params){
-        System.out.println("hahah");
-        Pageable pageable = new PageRequest((Integer) params.get("page"), (Integer)params.get("per"));
-        List<Transaction> transactionList = (List<Transaction>) transactionDao.findAll(pageable);
+    public @ResponseBody Page index(@RequestParam(name = "page", defaultValue = "0") Integer page,
+                                    @RequestParam(name = "per", defaultValue = "20") Integer per){
+        Pageable pageable = new PageRequest(page, per);
+        Page<Transaction> transactionList = transactionDao.findAll(pageable);
         return transactionList;
     }
 
     @PostMapping()
     @Transactional
-    public @ResponseBody Map create(){
-        Transaction transaction = new Transaction("cny", 200, "refund");
-        TransactionData transactionData = new TransactionData(1002032, "Back to december");
-        transaction.setTransactionData(transactionData);
+    public @ResponseBody Map create(@RequestBody Transaction transaction){
+        // Transaction transaction = new Transaction("cny", 200, "refund");
+        // TransactionData transactionData = new TransactionData(1002032, "Back to december");
+        // transaction.setTransactionData(transactionData);
         transactionDao.save(transaction);
-        System.out.println("save successful");
         return null;
     }
 
@@ -44,13 +45,15 @@ public class TransactionsController {
     }
 
     @PutMapping("/{id}")
-    public @ResponseBody Map update(){
+    public @ResponseBody Map update(@PathVariable(name = "id")Long id, @RequestBody Transaction transactionParams){
+        Transaction transaction = transactionDao.findOne(id);
+        transactionDao.save(transactionParams);
         return null;
     }
 
     @DeleteMapping("/{id}")
-    public @ResponseBody Map destory(){
-
+    public @ResponseBody Map destory(@PathVariable(name = "id")Long id){
+        transactionDao.delete(id);
         return null;
     }
 

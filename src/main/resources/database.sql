@@ -1,3 +1,5 @@
+-- docker run --name minesql -p 127.0.0.1:3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7
+
 -- create transactions table
 create table transactions (
   id int primary key auto_increment,
@@ -14,3 +16,4 @@ values
 
 alter table transactions add column data json;
 alter table transactions change data transaction_data json;
+
