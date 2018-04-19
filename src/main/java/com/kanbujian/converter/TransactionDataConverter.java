@@ -4,17 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kanbujian.entity.TransactionData;
+import com.kanbujian.util.JsonObjectMapper;
 
 import javax.persistence.AttributeConverter;
 import java.io.IOException;
 
 public class TransactionDataConverter implements AttributeConverter<TransactionData, String> {
-    private static final ObjectMapper objectMapper;
-
-    static {
-        objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    }
+    private static final ObjectMapper objectMapper = JsonObjectMapper.getInstance();
 
     @Override
     public String convertToDatabaseColumn(TransactionData o) {

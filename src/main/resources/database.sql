@@ -27,6 +27,7 @@ create table logs
  created_at timestamp default CURRENT_TIMESTAMP
 );
 
-alter table transaction add column deleted_at timestamp default null;
-alter table logs modify column happend_at datetime, created_at datetime;
+alter table transactions add column deleted_at datetime default null;
+alter table logs modify column happend_at datetime;
+alter table logs modify column created_at datetime;
 
