@@ -6,6 +6,7 @@ import com.kanbujian.converter.TransactionDataConverter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name= "transactions")
 public class Transaction implements Serializable {
@@ -21,6 +22,9 @@ public class Transaction implements Serializable {
 
     @Convert(converter = TransactionDataConverter.class)
     private TransactionData transactionData;
+
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "transaction")
+    private List<TransactionLog> transactionLogs;
 
     public Transaction(){
     }
@@ -72,8 +76,17 @@ public class Transaction implements Serializable {
         this.transactionData = transactionData;
     }
 
+    public List<TransactionLog> getTransactionLogs() {
+        return transactionLogs;
+    }
+
+    public void setTransactionLogs(List<TransactionLog> transactionLogs) {
+        this.transactionLogs = transactionLogs;
+    }
+
     enum OrderAction{
         charge,
         refund
     }
+
 }

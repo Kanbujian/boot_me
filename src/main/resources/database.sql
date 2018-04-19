@@ -17,3 +17,16 @@ values
 alter table transactions add column data json;
 alter table transactions change data transaction_data json;
 
+create table logs
+(id int primary key auto_increment,
+ owner_id int not null,
+ owner_type varchar(32) not null,
+ event_type varchar(32),
+ log_data json,
+ happend_at timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ created_at timestamp default CURRENT_TIMESTAMP
+);
+
+alter table transaction add column deleted_at timestamp default null;
+alter table logs modify column happend_at datetime, created_at datetime;
+

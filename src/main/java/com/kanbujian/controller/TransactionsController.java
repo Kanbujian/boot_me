@@ -3,6 +3,7 @@ package com.kanbujian.controller;
 import com.kanbujian.dao.TransactionDao;
 import com.kanbujian.entity.Transaction;
 import com.kanbujian.entity.TransactionData;
+import com.kanbujian.entity.TransactionLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +32,21 @@ public class TransactionsController {
 
     @PostMapping()
     @Transactional
-    public @ResponseBody Map create(@RequestBody Transaction transaction){
+    public @ResponseBody Transaction create(@RequestBody Transaction transaction){
         // Transaction transaction = new Transaction("cny", 200, "refund");
         // TransactionData transactionData = new TransactionData(1002032, "Back to december");
         // transaction.setTransactionData(transactionData);
+        TransactionLog transactionLog = new TransactionLog();
+        transactionLog.setEventType("charge");
+        transactionLog.setTransaction(transaction);
+        List<TransactionLog> logs = transaction.getTransactionLogs();
+        if (logs == null){
+            logs = new ArrayList<TransactionLog>();
+        }
+        logs.add(transactionLog);
+        transaction.setTransactionLogs(logs);
         transactionDao.save(transaction);
-        return null;
+        return transaction;
     }
 
     @GetMapping("/{id}")
