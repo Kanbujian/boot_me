@@ -2,7 +2,6 @@ package com.kanbujian.controller;
 
 import com.kanbujian.dao.TransactionDao;
 import com.kanbujian.entity.Transaction;
-import com.kanbujian.entity.TransactionData;
 import com.kanbujian.entity.TransactionLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController()
 @Transactional
@@ -25,7 +25,7 @@ public class TransactionsController {
     @GetMapping()
     public @ResponseBody Page index(@RequestParam(name = "page", defaultValue = "0") Integer page,
                                     @RequestParam(name = "per", defaultValue = "20") Integer per){
-        Pageable pageable = new PageRequest(page, per);
+        Pageable pageable = PageRequest.of(page, per);
         Page<Transaction> transactionList = transactionDao.findAll(pageable);
         return transactionList;
     }
@@ -50,21 +50,22 @@ public class TransactionsController {
     }
 
     @GetMapping("/{id}")
-    public @ResponseBody Transaction show(@PathVariable(name = "id")Long id){
-        Transaction transaction = transactionDao.findOne(id);
+    public @ResponseBody
+    Optional<Transaction> show(@PathVariable(name = "id")Long id){
+        Optional<Transaction> transaction = transactionDao.findById(id);
         return transaction;
     }
 
     @PutMapping("/{id}")
     public @ResponseBody Map update(@PathVariable(name = "id")Long id, @RequestBody Transaction transactionParams){
-        Transaction transaction = transactionDao.findOne(id);
+        Optional<Transaction> transaction = transactionDao.findById(id);
         transactionDao.save(transactionParams);
         return null;
     }
 
     @DeleteMapping("/{id}")
     public @ResponseBody Map destory(@PathVariable(name = "id")Long id){
-        transactionDao.delete(id);
+        transactionDao.deleteById(id);
         return null;
     }
 

@@ -7,6 +7,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Configuration
 @EnableAsync
 public class WorkerConfig {
@@ -24,5 +27,11 @@ public class WorkerConfig {
         taskExecutor.setQueueCapacity(queueCapacity);
         taskExecutor.initialize();
         return taskExecutor;
+    }
+
+    @Bean("executorService")
+    public ExecutorService executorService (){
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        return executorService;
     }
 }
