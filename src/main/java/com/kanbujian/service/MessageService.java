@@ -18,8 +18,7 @@ public class MessageService {
     private StringRedisTemplate stringRedisTemplate;
 
     @Async
-    public CompletableFuture<String> create(Map params) throws InterruptedException {
-        Thread.sleep(3000l);
+    public CompletableFuture<String> create(Map params){
         redisTemplate.opsForValue().set(params.get("sender"), params.get("content"));
         String content = (String) redisTemplate.opsForValue().get(params.get("sender"));
         redisTemplate.opsForValue().set("status", "success");

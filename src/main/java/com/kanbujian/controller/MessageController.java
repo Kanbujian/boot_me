@@ -1,7 +1,10 @@
 package com.kanbujian.controller;
 
+import com.kanbujian.job.BaseJob;
 import com.kanbujian.job.CreateOrderJob;
 import com.kanbujian.service.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -18,12 +21,13 @@ import java.util.concurrent.Executors;
 
 @Controller
 public class MessageController {
+    private final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     @Autowired
     private MessageService messageService;
 
     @Autowired
-    private ExecutorService executorService;
+    private CreateOrderJob createOrderJob;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -37,17 +41,14 @@ public class MessageController {
        return map;
     }
 
-    @Async
     @GetMapping("/retrieve")
-    public @ResponseBody String retrieve() throws InterruptedException, ExecutionException {
-        Map params = new HashMap(){{
-           put("sender", "jack");
-           put("content", "hello");
-        }};
-        String jobId = UUID.randomUUID().toString();
-        params.put("job_id", jobId);
-        CompletableFuture<String> result = messageService.create(params);
-        return jobId;
+    public @ResponseBody String retrieve(@RequestParam(name = "jobId") String jobId){
+        String jobResult = (String) redisTemplate.opsForValue().get(jobId);
+        if (jobResult == null) {
+            return "retry";
+        }else {
+            return jobResult;
+        }
     }
 
     @PostMapping("/messages")
@@ -56,8 +57,8 @@ public class MessageController {
             put("sender", "jack");
             put("content", "hello");
         }};
-        System.out.println("controller thread" + Thread.currentThread().getName());
-        String jobId = new CreateOrderJob(executorService, redisTemplate).perform();
+        logger.debug("controller thread" + Thread.currentThread().getName());
+        String jobId = createOrderJob.perform();
         return jobId;
     }
 }
