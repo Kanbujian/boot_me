@@ -1,12 +1,14 @@
 package com.kanbujian.entity;
 
 
+import com.kanbujian.converter.MapConverter;
 import com.kanbujian.converter.TransactionDataConverter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @Entity(name= "transactions")
 public class Transaction implements Serializable {
@@ -22,6 +24,9 @@ public class Transaction implements Serializable {
 
     @Convert(converter = TransactionDataConverter.class)
     private TransactionData transactionData;
+
+    @Convert(converter = MapConverter.class)
+    private Map<String, Object> extra;
 
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "transaction")
     private List<TransactionLog> transactionLogs;
@@ -82,6 +87,14 @@ public class Transaction implements Serializable {
 
     public void setTransactionLogs(List<TransactionLog> transactionLogs) {
         this.transactionLogs = transactionLogs;
+    }
+
+    public Map getExtra() {
+        return extra;
+    }
+
+    public void setExtra(Map extra) {
+        this.extra = extra;
     }
 
     enum OrderAction{

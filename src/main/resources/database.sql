@@ -31,3 +31,5 @@ alter table transactions add column deleted_at datetime default null;
 alter table logs modify column happend_at datetime;
 alter table logs modify column created_at datetime;
 
+alter table transactions add column extra json;
+
