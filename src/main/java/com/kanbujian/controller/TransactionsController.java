@@ -3,6 +3,7 @@ package com.kanbujian.controller;
 import com.kanbujian.dao.TransactionDao;
 import com.kanbujian.entity.Transaction;
 import com.kanbujian.entity.TransactionLog;
+import com.kanbujian.payment.ChargeDispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +33,7 @@ public class TransactionsController {
 
     @PostMapping()
     @Transactional
-    public @ResponseBody Transaction create(@RequestBody Transaction transaction){
+    public @ResponseBody Transaction create(@RequestBody Transaction transaction) throws Exception {
         // Transaction transaction = new Transaction("cny", 200, "refund");
         // TransactionData transactionData = new TransactionData(1002032, "Back to december");
         // transaction.setTransactionData(transactionData);
@@ -46,6 +47,8 @@ public class TransactionsController {
         logs.add(transactionLog);
         transaction.setTransactionLogs(logs);
         transactionDao.save(transaction);
+
+
         return transaction;
     }
 
@@ -66,6 +69,14 @@ public class TransactionsController {
     @DeleteMapping("/{id}")
     public @ResponseBody Map destory(@PathVariable(name = "id")Long id){
         transactionDao.deleteById(id);
+        return null;
+    }
+
+
+    @PutMapping("/{id}/charge")
+    public @ResponseBody Map charge(@PathVariable(name = "id")Long id) throws Exception {
+        Optional<Transaction> transaction = transactionDao.findById(id);
+        ChargeDispatcher.dispatch(transaction.get());
         return null;
     }
 

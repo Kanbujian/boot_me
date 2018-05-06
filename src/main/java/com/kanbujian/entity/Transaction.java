@@ -3,7 +3,9 @@ package com.kanbujian.entity;
 
 import com.kanbujian.converter.MapConverter;
 import com.kanbujian.converter.TransactionDataConverter;
+import com.kanbujian.payment.ChargeDispatcher;
 
+import javax.annotation.PreDestroy;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -30,6 +32,12 @@ public class Transaction implements Serializable {
 
     @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "transaction")
     private List<TransactionLog> transactionLogs;
+
+    private String notifyUrl;
+
+    private String readableNumber;
+
+    private String gateway;
 
     public Transaction(){
     }
@@ -95,6 +103,30 @@ public class Transaction implements Serializable {
 
     public void setExtra(Map extra) {
         this.extra = extra;
+    }
+
+    public String getNotifyUrl() {
+        return notifyUrl;
+    }
+
+    public void setNotifyUrl(String notifyUrl) {
+        this.notifyUrl = notifyUrl;
+    }
+
+    public String getReadableNumber() {
+        return readableNumber;
+    }
+
+    public void setReadableNumber(String readableNumber) {
+        this.readableNumber = readableNumber;
+    }
+
+    public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
     }
 
     enum OrderAction{

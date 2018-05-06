@@ -33,3 +33,6 @@ alter table logs modify column created_at datetime;
 
 alter table transactions add column extra json;
 
+alter table transactions add column notify_url varchar(120);
+alter table transactions add column readable_number varchar(32);
+

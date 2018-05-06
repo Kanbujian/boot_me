@@ -1,6 +1,5 @@
 package com.kanbujian.util;
 
-import com.sun.org.apache.regexp.internal.RE;
 
 import java.lang.reflect.Proxy;
 

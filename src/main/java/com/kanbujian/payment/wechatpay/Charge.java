@@ -2,10 +2,12 @@ package com.kanbujian.payment.wechatpay;
 
 import com.kanbujian.entity.Transaction;
 import com.kanbujian.entity.TransactionData;
+import com.kanbujian.payment.Action;
 
+import java.io.IOException;
 import java.util.Map;
 
-public class Charge {
+public class Charge implements Action {
     private Transaction transaction;
 
     public Charge(Transaction transaction) {
@@ -20,8 +22,10 @@ public class Charge {
         this.transaction = transaction;
     }
 
-    public void run(){
-        Map extra = transaction.getExtra();
+    public Map run() throws Exception {
+        UnifiedOrder unifiedOrder =  new UnifiedOrder(transaction);
+        unifiedOrder.run();
+        return null;
     }
 
 }
