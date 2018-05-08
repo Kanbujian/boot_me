@@ -3,7 +3,7 @@ package com.kanbujian.controller;
 import com.kanbujian.dao.TransactionDao;
 import com.kanbujian.entity.Transaction;
 import com.kanbujian.entity.TransactionLog;
-import com.kanbujian.payment.ChargeDispatcher;
+import com.kanbujian.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +22,9 @@ import java.util.Optional;
 public class TransactionsController {
     @Autowired
     private TransactionDao transactionDao;
+
+    @Autowired
+    private TransactionService transactionService;
 
     @GetMapping()
     public @ResponseBody Page index(@RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -75,9 +78,8 @@ public class TransactionsController {
 
     @PutMapping("/{id}/charge")
     public @ResponseBody Map charge(@PathVariable(name = "id")Long id) throws Exception {
-        Optional<Transaction> transaction = transactionDao.findById(id);
-        ChargeDispatcher.dispatch(transaction.get());
-        return null;
+        Transaction ts = transactionService.charge(id);
+        return (Map) ts.getExtra().get("chargeInfo");
     }
 
 }
