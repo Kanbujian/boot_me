@@ -35,4 +35,13 @@ alter table transactions add column extra json;
 
 alter table transactions add column notify_url varchar(120);
 alter table transactions add column readable_number varchar(32);
+alter table transactions add column gateway varchar(32);
 
+create table apps(
+  id int primary key auto_increment,
+  name varchar(32) not null,
+  token varchar(32) not null,
+  comment varchar(200),
+  created_at datetime,
+  updated_at datetime
+);
