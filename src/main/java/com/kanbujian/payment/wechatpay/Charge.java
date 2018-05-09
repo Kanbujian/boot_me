@@ -1,10 +1,8 @@
 package com.kanbujian.payment.wechatpay;
 
 import com.kanbujian.entity.Transaction;
-import com.kanbujian.entity.TransactionData;
 import com.kanbujian.payment.Action;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

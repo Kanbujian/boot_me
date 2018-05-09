@@ -1,10 +1,8 @@
 package com.kanbujian.payment.wechatpay;
 
-import com.kanbujian.entity.Transaction;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class UnifiedOrder {
@@ -34,9 +32,13 @@ public class UnifiedOrder {
             String data = requestBody.string();
             Map res = XmlUtil.dom2Map(data);
             if (SignUtil.isValid(res, appSecret)){
-                return res;
+                if("SUCCESS".equals(res.get("result_code"))){
+                    return res;
+                }else{
+                    throw new ResponseException(res);
+                }
             }else{
-                // some error
+                throw new ResponseException("SIGN_ERROR", "签名错误", "自己检查一波儿");
             }
         }
         return null;
