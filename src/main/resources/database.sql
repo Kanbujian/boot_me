@@ -45,3 +45,5 @@ create table apps(
   created_at datetime,
   updated_at datetime
 );
+
+alter table transactions add column status varchar(32);

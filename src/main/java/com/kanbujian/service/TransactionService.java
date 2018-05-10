@@ -25,6 +25,7 @@ public class TransactionService {
             Map response = obj.run();
             System.out.println(response.toString());
             ts.getExtra().put("chargeInfo", response);
+            ts.setStatus(Transaction.Status.unprocessed);
             transactionDao.save(ts);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -52,6 +53,7 @@ public class TransactionService {
             Map response = obj.run();
             System.out.println(response.toString());
             ts.getExtra().put("refundInfo", response);
+            ts.setStatus(Transaction.Status.refunded);
             transactionDao.save(ts);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

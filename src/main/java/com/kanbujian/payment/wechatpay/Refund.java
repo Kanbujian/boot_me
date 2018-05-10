@@ -38,7 +38,6 @@ public class Refund implements Action {
         Map requestParams = new HashMap();
         requestParams.put("appid", appId);
         requestParams.put("mch_id", mchId);
-        requestParams.put("openid", extra.get("open_id"));
         requestParams.put("out_trade_no", transaction.getReadableNumber());
         requestParams.put("out_refund_no", UUID.randomUUID().toString().replace("-", ""));
         requestParams.put("total_fee", transaction.getAmount());

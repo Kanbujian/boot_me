@@ -29,9 +29,10 @@ public class Refund {
         params.put("nonce_str", SignUtil.nonceStr());
         params.put("sign", SignUtil.sign(params, appSecret));
 
-        byte[] certByteArray = trustedCertificatesInputStream(certPath);
+        byte[] certByteArray = trustedCertificates(certPath);
         InputStream certInputStream = new ByteArrayInputStream(certByteArray);
         KeyStore keyStore = keyStore(certInputStream);
+
         X509TrustManager trustManager = trustManager(keyStore);
         SSLContext sslContext = sslContextForTrustedCertificates(keyStore, trustManager);
 
@@ -63,7 +64,7 @@ public class Refund {
         return null;
     }
 
-    private byte[] trustedCertificatesInputStream(String certPath) throws IOException {
+    private byte[] trustedCertificates(String certPath) throws IOException {
         OkHttpClient httpClient = new OkHttpClient();
         Request certRequest = new Request.Builder().url(certPath).build();
         Response certResponse = httpClient.newCall(certRequest).execute();
@@ -87,9 +88,13 @@ public class Refund {
         return keyStore;
     }
 
+
     private SSLContext sslContextForTrustedCertificates(KeyStore keyStore, TrustManager trustManager) throws Exception {
-        SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(keyManagers(keyStore), new TrustManager[]{ trustManager }, new SecureRandom());
+        SSLContext sslContext = SSLContext.getInstance("TLSv1");
+        // we set trustManager as null, otherwise will result some error
+        // reference: https://pay.weixin.qq.com/wiki/doc/api/micropay.php?chapter=23_4
+        // sslContext.init(keyManagers(keyStore), new TrustManager[]{ trustManager }, new SecureRandom());
+        sslContext.init(keyManagers(keyStore), null, new SecureRandom());
 
         return sslContext;
     }

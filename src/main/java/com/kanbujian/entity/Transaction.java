@@ -3,9 +3,7 @@ package com.kanbujian.entity;
 
 import com.kanbujian.converter.MapConverter;
 import com.kanbujian.converter.TransactionDataConverter;
-import com.kanbujian.payment.ChargeDispatcher;
 
-import javax.annotation.PreDestroy;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -23,6 +21,11 @@ public class Transaction implements Serializable {
     @NotNull
     @Enumerated(value = EnumType.STRING)
     private OrderAction orderAction;
+
+    @NotNull
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
     @Convert(converter = TransactionDataConverter.class)
     private TransactionData transactionData;
@@ -81,6 +84,14 @@ public class Transaction implements Serializable {
         this.orderAction = orderAction;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public TransactionData getTransactionData() {
         return transactionData;
     }
@@ -132,6 +143,17 @@ public class Transaction implements Serializable {
     enum OrderAction{
         charge,
         refund
+    }
+
+    public enum Status{
+        unprocessed,
+        charged,
+        refunded,
+    }
+
+    @PrePersist
+    private void onCreated(){
+       status =  Status.unprocessed;
     }
 
 }
