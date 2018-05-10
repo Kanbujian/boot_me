@@ -1,11 +1,14 @@
 package com.kanbujian.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import com.kanbujian.converter.MapConverter;
+import com.kanbujian.converter.TransactionDataConverter;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 @Entity(name= "transactions")
 public class Transaction implements Serializable {
@@ -16,16 +19,36 @@ public class Transaction implements Serializable {
     @NotNull
     private Integer amount;
     @NotNull
-    private String orderAction;
+    @Enumerated(value = EnumType.STRING)
+    private OrderAction orderAction;
+
+    @NotNull
+    @Column
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
+
+    @Convert(converter = TransactionDataConverter.class)
+    private TransactionData transactionData;
+
+    @Convert(converter = MapConverter.class)
+    private Map<String, Object> extra;
+
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, mappedBy = "transaction")
+    private List<TransactionLog> transactionLogs;
+
+    private String notifyUrl;
+
+    private String readableNumber;
+
+    private String gateway;
 
     public Transaction(){
-
     }
 
     public Transaction(String currency, Integer amount, String orderAction) {
         this.currency = currency;
         this.amount = amount;
-        this.orderAction = orderAction;
+        this.orderAction = OrderAction.valueOf(orderAction);
     }
 
 
@@ -53,12 +76,84 @@ public class Transaction implements Serializable {
         this.amount = amount;
     }
 
-    public String getOrderAction() {
+    public OrderAction getOrderAction() {
         return orderAction;
     }
 
-    public void setOrderAction(String orderAction) {
+    public void setOrderAction(OrderAction orderAction) {
         this.orderAction = orderAction;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public TransactionData getTransactionData() {
+        return transactionData;
+    }
+
+    public void setTransactionData(TransactionData transactionData) {
+        this.transactionData = transactionData;
+    }
+
+    public List<TransactionLog> getTransactionLogs() {
+        return transactionLogs;
+    }
+
+    public void setTransactionLogs(List<TransactionLog> transactionLogs) {
+        this.transactionLogs = transactionLogs;
+    }
+
+    public Map getExtra() {
+        return extra;
+    }
+
+    public void setExtra(Map extra) {
+        this.extra = extra;
+    }
+
+    public String getNotifyUrl() {
+        return notifyUrl;
+    }
+
+    public void setNotifyUrl(String notifyUrl) {
+        this.notifyUrl = notifyUrl;
+    }
+
+    public String getReadableNumber() {
+        return readableNumber;
+    }
+
+    public void setReadableNumber(String readableNumber) {
+        this.readableNumber = readableNumber;
+    }
+
+    public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
+    }
+
+    enum OrderAction{
+        charge,
+        refund
+    }
+
+    public enum Status{
+        unprocessed,
+        charged,
+        refunded,
+    }
+
+    @PrePersist
+    private void onCreated(){
+       status =  Status.unprocessed;
     }
 
 }
