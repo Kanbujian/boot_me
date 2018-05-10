@@ -8,6 +8,12 @@ import java.security.*;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * Wechatpay Refund
+ * apply refund for a wechatpay transactions
+ * reference: basic merchant {@link https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_4}
+ * service_provider {@link https://pay.weixin.qq.com/wiki/doc/api/jsapi_sl.php?chapter=9_4}
+ */
 public class Refund {
     private final String URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 
@@ -114,15 +120,6 @@ public class Refund {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         keyManagerFactory.init(keyStore, certPwd.toCharArray());
         return keyManagerFactory.getKeyManagers();
-    }
-
-    private void writeInputSteamToFile(InputStream io) throws IOException {
-        byte[] data = new byte[io.available()];
-        io.read(data);
-        File f = new File("/ssss.p12");
-        OutputStream os = new FileOutputStream(f);
-        os.write(data);
-        os.close();
     }
 
 }

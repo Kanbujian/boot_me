@@ -5,6 +5,12 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Wechatpay UnifiedOrder
+ * Pre Create Order
+ * reference: basic merchant {@link https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1}
+ * service_provider {@link https://pay.weixin.qq.com/wiki/doc/api/jsapi_sl.php?chapter=9_1}
+ */
 public class UnifiedOrder {
     private final String URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
