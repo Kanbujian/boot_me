@@ -1,4 +1,4 @@
-package com.kanbujian.payment.wechatpay;
+package com.kanbujian.payment.wechatpay.lib;
 
 import okhttp3.*;
 
@@ -11,19 +11,20 @@ public class UnifiedOrder {
     private String appId;
     private String mchId;
     private String appSecret;
+    private OkHttpClient httpClient;
 
 
     public UnifiedOrder(String appId, String mchId, String appSecret) {
         this.appId = appId;
         this.mchId = mchId;
         this.appSecret = appSecret;
+        httpClient = new OkHttpClient();
     }
 
     public Map run(Map params) throws IOException {
         params.put("nonce_str", SignUtil.nonceStr());
         params.put("sign", SignUtil.sign(params, appSecret));
 
-        OkHttpClient httpClient = new OkHttpClient();
         RequestBody body = RequestBody.create(MediaType.parse("application/xml"), SignUtil.toXml(params));
         Request request = new Request.Builder().url(URL).post(body).build();
         Response response = httpClient.newCall(request).execute();

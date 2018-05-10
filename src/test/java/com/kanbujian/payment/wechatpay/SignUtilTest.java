@@ -1,6 +1,6 @@
 package com.kanbujian.payment.wechatpay;
 
-import org.junit.jupiter.api.BeforeAll;
+import com.kanbujian.payment.wechatpay.lib.SignUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

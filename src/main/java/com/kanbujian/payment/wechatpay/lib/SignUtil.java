@@ -1,6 +1,4 @@
-package com.kanbujian.payment.wechatpay;
-
-
+package com.kanbujian.payment.wechatpay.lib;
 
 import java.util.*;
 import java.util.stream.Collectors;

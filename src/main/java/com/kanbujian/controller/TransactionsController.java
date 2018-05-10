@@ -82,4 +82,10 @@ public class TransactionsController {
         return (Map) ts.getExtra().get("chargeInfo");
     }
 
+    @PutMapping("/{id}/refund")
+    public @ResponseBody Map refund(@PathVariable(name = "id")Long id, @RequestBody Map params) throws Exception {
+        Transaction ts = transactionService.refund(id, params);
+        return (Map) ts.getExtra().get("chargeInfo");
+    }
+
 }

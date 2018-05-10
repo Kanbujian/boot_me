@@ -2,6 +2,7 @@ package com.kanbujian.payment.wechatpay;
 
 import com.kanbujian.entity.Transaction;
 import com.kanbujian.payment.Action;
+import com.kanbujian.payment.wechatpay.lib.UnifiedOrder;
 
 import java.util.HashMap;
 import java.util.Map;

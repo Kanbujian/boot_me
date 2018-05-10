@@ -1,4 +1,4 @@
-package com.kanbujian.payment.wechatpay;
+package com.kanbujian.payment.wechatpay.lib;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

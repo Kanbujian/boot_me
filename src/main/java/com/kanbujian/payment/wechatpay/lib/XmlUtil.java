@@ -1,4 +1,4 @@
-package com.kanbujian.payment.wechatpay;
+package com.kanbujian.payment.wechatpay.lib;
 
 
 
@@ -23,7 +23,7 @@ public class XmlUtil {
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        if(doc ==null)
+        if(doc == null)
             return map;
         Element root = doc.getRootElement();
         for (Iterator iterator = root.elementIterator(); iterator.hasNext();) {
@@ -37,21 +37,10 @@ public class XmlUtil {
         Set<Map.Entry<String, String>> set= map.entrySet();
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("xml");
-        set.forEach((entry) ->{
+        set.forEach((entry) -> {
             root.addElement(entry.getKey()).addText(entry.getValue());
         });
         return document.asXML();
-    }
-
-
-
-    public static void main(String[] args) {
-        // dom2Map( "<xml><name>jack</name><age>12</age></xml>");
-        System.out.println(mapToXML(new HashMap(){{
-            put("name", "jack");
-            put("age", "12");
-            put("33s", "terer");
-        }}));
     }
 
 }
