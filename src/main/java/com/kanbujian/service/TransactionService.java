@@ -7,18 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class TransactionService {
+    public static final String CHARGE_CLASS_NAME = "com.kanbujian.payment.%s.Charge";
+    public static final String REFUND_CLASS_NAME = "com.kanbujian.payment.%s.Refund";
+    public static final String NOTIFY_PAID_CLASS_NAME = "com.kanbujian.payment.%s.NotifyPaid";
+    public static final String PARAM_CONVERTER_CLASS_NAME = "com.kanbujian.payment.%s.ParamConverter";
+
     @Autowired
     private TransactionDao transactionDao;
 
     public Transaction charge(Long transactionId) throws Exception {
         Transaction ts = transactionDao.findById(transactionId).get();
         String gateway = ts.getGateway();
-        String classString =  String.format("com.kanbujian.payment.%s.Charge", gateway);
+        String classString =  String.format(CHARGE_CLASS_NAME, gateway);
         try {
             Class clazz = Class.forName(classString);
             Action obj = (Action) clazz.getDeclaredConstructor(Transaction.class).newInstance(ts);
@@ -46,10 +52,42 @@ public class TransactionService {
         Transaction ts = transactionDao.findById(transactionId).get();
         String gateway = ts.getGateway();
         ts.getExtra().putAll(refundParams);
-        String classString =  String.format("com.kanbujian.payment.%s.Refund", gateway);
+        String classString =  String.format(REFUND_CLASS_NAME, gateway);
         try {
             Class clazz = Class.forName(classString);
             Action obj = (Action) clazz.getDeclaredConstructor(Transaction.class).newInstance(ts);
+            Map response = obj.run();
+            System.out.println(response.toString());
+            ts.getExtra().put("refundInfo", response);
+            ts.setStatus(Transaction.Status.refunded);
+            transactionDao.save(ts);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return ts;
+    }
+
+    public Transaction notifyPaid(Long transactionId, byte[] data)throws Exception {
+        Transaction ts = transactionDao.findById(transactionId).get();
+        String gateway = ts.getGateway();
+        String classString =  String.format(PARAM_CONVERTER_CLASS_NAME, gateway);
+        try {
+            Map notifyParams = null;
+            Class converterClazz = Class.forName(classString);
+            Method convert = converterClazz.getDeclaredMethod("convertNotifyParams", byte[].class);
+            notifyParams = (Map) convert.invoke(null, data);
+
+            Class clazz = Class.forName(classString);
+            Action obj = (Action) clazz.getDeclaredConstructor(Transaction.class, Map.class).newInstance(ts, notifyParams);
             Map response = obj.run();
             System.out.println(response.toString());
             ts.getExtra().put("refundInfo", response);

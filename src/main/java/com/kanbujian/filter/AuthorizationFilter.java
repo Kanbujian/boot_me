@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class AuthorizationFilter implements Filter {
     private final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
 
+    private String[] ignorePaths = {"/transactions/\\d*/notify/paid"};
 
     @Autowired
     private AppDao appDao;
@@ -38,8 +40,12 @@ public class AuthorizationFilter implements Filter {
                 .stream()
                 .collect(Collectors.toMap(h -> h , httpServletRequest::getHeader));
         String authorization = headers.get("authorization");
-        logger.debug("auth token is " + authorization);
-        if (authorization!=null && appDao.findByToken(authorization).isPresent()){
+        String requestUrl = httpServletRequest.getRequestURI();
+        boolean skip_auth = Arrays.stream(ignorePaths).anyMatch((path) -> {
+            return requestUrl.matches(path);
+        });
+
+        if (skip_auth || (authorization!=null && appDao.findByToken(authorization).isPresent())){
             filterChain.doFilter(servletRequest, servletResponse);
         }else{
             httpServletResponse.sendError(403);

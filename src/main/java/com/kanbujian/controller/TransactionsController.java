@@ -10,7 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +77,6 @@ public class TransactionsController {
         return null;
     }
 
-
     @PutMapping("/{id}/charge")
     public @ResponseBody Map charge(@PathVariable(name = "id")Long id) throws Exception {
         Transaction ts = transactionService.charge(id);
@@ -85,6 +86,15 @@ public class TransactionsController {
     @PutMapping("/{id}/refund")
     public @ResponseBody Map refund(@PathVariable(name = "id")Long id, @RequestBody Map params) throws Exception {
         Transaction ts = transactionService.refund(id, params);
+        return (Map) ts.getExtra().get("refundInfo");
+    }
+
+    @PostMapping("/{id}/notify/paid")
+    public @ResponseBody Map notifyPaid(@PathVariable(name = "id")Long id, HttpServletRequest request) throws Exception {
+        InputStream is = request.getInputStream();
+        byte[] data = new byte[is.available()];
+        is.read(data);
+        Transaction ts = transactionService.notifyPaid(id, data);
         return (Map) ts.getExtra().get("refundInfo");
     }
 
