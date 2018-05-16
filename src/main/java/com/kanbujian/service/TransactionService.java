@@ -3,6 +3,7 @@ package com.kanbujian.service;
 import com.kanbujian.dao.TransactionDao;
 import com.kanbujian.entity.Transaction;
 import com.kanbujian.payment.Action;
+import com.kanbujian.payment.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,6 @@ public class TransactionService {
             Class clazz = Class.forName(classString);
             Action obj = (Action) clazz.getDeclaredConstructor(Transaction.class).newInstance(ts);
             Map response = obj.run();
-            System.out.println(response.toString());
             ts.getExtra().put("refundInfo", response);
             ts.setStatus(Transaction.Status.refunded);
             transactionDao.save(ts);
@@ -76,21 +76,22 @@ public class TransactionService {
         return ts;
     }
 
-    public Transaction notifyPaid(Long transactionId, byte[] data)throws Exception {
+    public String notifyPaid(Long transactionId, byte[] data)throws Exception {
         Transaction ts = transactionDao.findById(transactionId).get();
         String gateway = ts.getGateway();
-        String classString =  String.format(PARAM_CONVERTER_CLASS_NAME, gateway);
+        String convertClassString =  String.format(PARAM_CONVERTER_CLASS_NAME, gateway);
+        String notifyPaidString =  String.format(NOTIFY_PAID_CLASS_NAME, gateway);
+        Map response = null;
         try {
             Map notifyParams = null;
-            Class converterClazz = Class.forName(classString);
-            Method convert = converterClazz.getDeclaredMethod("convertNotifyParams", byte[].class);
-            notifyParams = (Map) convert.invoke(null, data);
+            Class converterClazz = Class.forName(convertClassString);
+            Converter converter = (Converter) converterClazz.getDeclaredConstructor().newInstance();
+            notifyParams = converter.convertNotifyParams(data);
 
-            Class clazz = Class.forName(classString);
+            Class clazz = Class.forName(notifyPaidString);
             Action obj = (Action) clazz.getDeclaredConstructor(Transaction.class, Map.class).newInstance(ts, notifyParams);
-            Map response = obj.run();
-            System.out.println(response.toString());
-            ts.getExtra().put("refundInfo", response);
+            response = obj.run();
+            ts.getExtra().put("refundInfo", notifyParams);
             ts.setStatus(Transaction.Status.refunded);
             transactionDao.save(ts);
         } catch (ClassNotFoundException e) {
@@ -104,7 +105,6 @@ public class TransactionService {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-
-        return ts;
+        return (String) response.get("result");
     }
 }

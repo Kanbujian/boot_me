@@ -38,7 +38,7 @@ public class XmlUtil {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement("xml");
         set.forEach((entry) -> {
-            root.addElement(entry.getKey()).addText(entry.getValue());
+            root.addElement(entry.getKey()).addCDATA(entry.getValue());
         });
         return document.asXML();
     }

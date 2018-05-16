@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController()
 @Transactional
@@ -90,12 +91,13 @@ public class TransactionsController {
     }
 
     @PostMapping("/{id}/notify/paid")
-    public @ResponseBody Map notifyPaid(@PathVariable(name = "id")Long id, HttpServletRequest request) throws Exception {
+    public @ResponseBody String notifyPaid(@PathVariable(name = "id")Long id, HttpServletRequest request) throws Exception {
         InputStream is = request.getInputStream();
-        byte[] data = new byte[is.available()];
+        byte[] data = new byte[request.getContentLength()];
         is.read(data);
-        Transaction ts = transactionService.notifyPaid(id, data);
-        return (Map) ts.getExtra().get("refundInfo");
+        String result = transactionService.notifyPaid(id, data);
+        return result;
     }
+
 
 }
